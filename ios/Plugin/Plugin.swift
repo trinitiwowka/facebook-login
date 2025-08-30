@@ -1,6 +1,7 @@
 import Foundation
 import Capacitor
 import FBSDKLoginKit
+import FBSDKCoreKit
 
 /**
  * Please read the Capacitor iOS Plugin Development Guide
@@ -222,5 +223,20 @@ public class FacebookLogin: CAPPlugin {
             Settings.shared.isAdvertiserIDCollectionEnabled = false
         }
         call.resolve()
+    }
+
+    @objc func getDeferredDeepLink(_ call: CAPPluginCall) {
+        AppLinkUtility.fetchDeferredAppLink { url, error in
+            if let error = error {
+                call.reject("Error retrieving deferred deep link", nil, error.localizedDescription)
+                return
+            }
+
+            if let url = url {
+                call.resolve(["uri": url.absoluteString])
+            } else {
+                call.reject("No deferred deep link found")
+            }
+        }
     }
 }
