@@ -58,28 +58,27 @@ public class FacebookLogin: CAPPlugin {
 
         let nonce = call.getString("nonce") ?? ""
         let tracking = call.getString("tracking") ?? "limited"
-        
-        // Ensure the configuration object is valid
-        guard let configuration = LoginConfiguration(
-            permissions: permissions,
-            tracking: tracking == "limited" ? .limited : .enabled
-        )
-        else {
-            return
-        }
 
-        if (nonce != "") {
-            // add nonce to the config if provided
-            guard let configuration = LoginConfiguration(
+        let configuration: LoginConfiguration
+        if nonce != "" {
+            guard let config = LoginConfiguration(
                 permissions: permissions,
                 tracking: tracking == "limited" ? .limited : .enabled,
                 nonce: nonce
-            )
-            else {
+            ) else {
                 return
             }
+            configuration = config
+        } else {
+            guard let config = LoginConfiguration(
+                permissions: permissions,
+                tracking: tracking == "limited" ? .limited : .enabled
+            ) else {
+                return
+            }
+            configuration = config
         }
-        
+
         DispatchQueue.main.async {
             self.loginManager.logIn(configuration: configuration) { result in
                 switch result {
