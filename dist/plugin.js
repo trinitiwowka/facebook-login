@@ -128,8 +128,6 @@ var FacebookLoginPlugin = (function (exports, core) {
 
     exports.FacebookLogin = FacebookLogin;
 
-    Object.defineProperty(exports, '__esModule', { value: true });
-
     return exports;
 
 })({}, capacitorExports);
