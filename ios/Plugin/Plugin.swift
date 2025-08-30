@@ -227,14 +227,15 @@ public class FacebookLogin: CAPPlugin {
     @objc func getDeferredDeepLink(_ call: CAPPluginCall) {
         AppLinkUtility.fetchDeferredAppLink { url, error in
             if let error = error {
-                call.reject("Error retrieving deferred deep link: \(error.localizedDescription)", nil, error)
+                call.reject("Error retrieving deferred deep link", nil, error.localizedDescription)
                 return
             }
-            guard let url = url else {
-                call.resolve()
-                return
+
+            if let url = url {
+                call.resolve(["uri": url.absoluteString])
+            } else {
+                call.reject("No deferred deep link found")
             }
-            call.resolve(["url": url.absoluteString])
         }
     }
 }
