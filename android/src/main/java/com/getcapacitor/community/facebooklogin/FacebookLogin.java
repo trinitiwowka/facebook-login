@@ -333,33 +333,52 @@ public class FacebookLogin extends Plugin {
         }
     }
 
-    @PluginMethod
-    public void getDeferredDeepLink(PluginCall call) {
-        Log.d(getLogTag(), "Entering getDeferredDeepLink()");
-
+    private void fetchDeferredDeepLinkWithRetry(PluginCall call, int retries, long delayMillis) {
         AppLinkData.fetchDeferredAppLinkData(this.getContext(), new AppLinkData.CompletionHandler() {
             @Override
             public void onDeferredAppLinkDataFetched(AppLinkData appLinkData) {
                 if (appLinkData != null) {
-                    Uri targetUri = appLinkData.getTargetUri();
-                    if (targetUri != null) {
-                        JSObject result = new JSObject();
-                        result.put("deepLink", targetUri.toString());
-                        Log.d(getLogTag(), "Deferred deep link: " + targetUri.toString());
+                    JSObject result = new JSObject();
 
-                        JSObject response = new JSObject();
-                        response.put("uri", result.getString("deepLink"));
-                        call.resolve(response);
-                    } else {
-                        Log.d(getLogTag(), "No deferred deep link found");
-                        call.reject("No deferred deep link found");
+                    // Get the target URI
+                    result.put("uri", appLinkData.getTargetUri() != null ? appLinkData.getTargetUri().toString() : null);
+
+                    // Get the promotion code
+                    result.put("promotionCode", appLinkData.getPromotionCode());
+
+                    // Process arguments bundle
+                    Bundle arguments = appLinkData.getArgumentBundle();
+                    JSObject argumentsObject = new JSObject();
+                    if (arguments != null) {
+                        for (String key : arguments.keySet()) {
+                            argumentsObject.put(key, arguments.get(key));
+                        }
                     }
+                    result.put("arguments", argumentsObject);
+
+                    call.resolve(result);
+                } else if (retries > 0) {
+                    Log.w(getLogTag(), "No deferred deep link data available. Retrying in " + delayMillis + " ms... Remaining retries: " + (retries - 1));
+                    new android.os.Handler(android.os.Looper.getMainLooper()).postDelayed(() -> {
+                        fetchDeferredDeepLinkWithRetry(call, retries - 1, delayMillis);
+                    }, delayMillis);
                 } else {
-                    Log.d(getLogTag(), "No deferred deep link data available");
-                    call.reject("No deferred deep link data available");
+                    Log.d(getLogTag(), "No deferred deep link data available after retries");
+                    call.reject("No deferred deep link data available after retries");
                 }
             }
         });
     }
 
+
+    @PluginMethod
+    public void getDeferredDeepLink(PluginCall call) {
+        Log.d(getLogTag(), "Entering getDeferredDeepLink()");
+        FacebookSdk.setAutoInitEnabled(true);
+        FacebookSdk.fullyInitialize();
+
+        int maxRetries = 5;
+        long retryDelayMillis = 2000;
+        fetchDeferredDeepLinkWithRetry(call, maxRetries, retryDelayMillis);
+    }
 }
