@@ -1,7 +1,7 @@
 PODS:
-  - Capacitor (5.0.0):
+  - Capacitor (7.4.3):
     - CapacitorCordova
-  - CapacitorCordova (5.0.0)
+  - CapacitorCordova (7.4.3)
   - FBAEMKit (18.0.1):
     - FBSDKCoreKit_Basics (= 18.0.1)
   - FBSDKCoreKit (18.0.1):
@@ -31,12 +31,12 @@ EXTERNAL SOURCES:
     :path: "../node_modules/@capacitor/ios"
 
 SPEC CHECKSUMS:
-  Capacitor: b332cb737d447561e854039fb72195206685dce2
-  CapacitorCordova: 4ea17670ee562680988a7ce9db68dee5160fe564
-  FBAEMKit: 78fb38f212fa49029aff24c669a39648d9b4e68b
+  Capacitor: 28d6c01026a9a3f7156529498ec1f389a2a28dbc
+  CapacitorCordova: 435121e81a2df4d0034f0fb11fcefab5104cfdb5
+  FBAEMKit: b2ed182002dbcb65d5a60059c9693d322186cd00
   FBSDKCoreKit: 7f96852f2539bdb88ba8d47e5ab4ae70a6f8d691
-  FBSDKCoreKit_Basics: 78fb38f212fa49029aff24c669a39648d9b4e68b
-  FBSDKLoginKit: 78fb38f212fa49029aff24c669a39648d9b4e68b
+  FBSDKCoreKit_Basics: 22d4c1a509ded4e45116f3bb167a14907550f62e
+  FBSDKLoginKit: f48c06446995cd209332831f692cea28b26e51da
 
 PODFILE CHECKSUM: a68315cfab9be0f791777bbf3c7b396c6cdb661a
 
