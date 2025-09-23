@@ -176,6 +176,10 @@ public class FacebookLogin: CAPPlugin {
             let archivedData = try NSKeyedArchiver.archivedData(withRootObject: configuration, requiringSecureCoding: true)
             UserDefaults.standard.set(archivedData, forKey: domainConfigurationDefaultsKey)
             _DomainConfigurationManager.sharedInstance().loadDomainConfiguration(withCompletionBlock: nil)
+            DispatchQueue.main.async {
+                GraphRequestConnection.setDidFetchDomainConfiguration()
+                GraphRequestQueue.sharedInstance().flush()
+            }
             return nil
         } catch {
             return error
