@@ -11,6 +11,8 @@ import FBSDKCoreKit
 public class FacebookLogin: CAPPlugin {
     private let loginManager = LoginManager()
     private let dateFormatter = ISO8601DateFormatter()
+    private let domainConfigurationDefaultsKey = "com.facebook.sdk:domainConfiguration"
+    private let domainConfigurationRequestTimeout: TimeInterval = 20
 
     override public func load() {
         if #available(iOS 11.2, *) {
@@ -119,6 +121,115 @@ public class FacebookLogin: CAPPlugin {
         }
     }
 
+    private func refreshDomainConfiguration(completion: @escaping (Error?) -> Void) {
+        guard let appID = Settings.shared.appID, !appID.isEmpty else {
+            DispatchQueue.main.async {
+                completion(nil)
+            }
+            return
+        }
+
+        let parameters: [String: String] = ["fields": ""]
+        let request = GraphRequest(
+            graphPath: "\(appID)/server_domain_infos",
+            parameters: parameters,
+            tokenString: nil,
+            httpMethod: .get,
+            flags: [.skipClientToken, .disableErrorRecovery]
+        )
+
+        let connection = GraphRequestConnection()
+        connection.timeout = domainConfigurationRequestTimeout
+        connection.add(request) { [weak self] _, result, error in
+            guard let self = self else { return }
+            let processedError = self.processDomainConfigurationResult(result: result, error: error)
+            DispatchQueue.main.async {
+                completion(processedError)
+            }
+        }
+        connection.start()
+    }
+
+    private func processDomainConfigurationResult(result: Any?, error: Error?) -> Error? {
+        if let error = error {
+            return error
+        }
+
+        guard let resultDictionary = result as? [String: Any],
+              let dataArray = resultDictionary["data"] as? [[String: Any]],
+              let endpointsContainer = dataArray.first,
+              let endpoints = endpointsContainer["endpoints"] as? [[String: Any]] else {
+            return domainConfigurationParsingError()
+        }
+
+        var domainInfo: [String: [String: Any]] = [:]
+        for endpoint in endpoints {
+            guard let key = endpoint["key"] as? String,
+                  let value = endpoint["value"] as? [String: Any] else {
+                continue
+            }
+            domainInfo[key] = value
+        }
+
+        let configuration = _DomainConfiguration(timestamp: Date(), domainInfo: domainInfo)
+        do {
+            let archivedData = try NSKeyedArchiver.archivedData(withRootObject: configuration, requiringSecureCoding: true)
+            UserDefaults.standard.set(archivedData, forKey: domainConfigurationDefaultsKey)
+            _DomainConfigurationManager.sharedInstance().loadDomainConfiguration(withCompletionBlock: nil)
+            return nil
+        } catch {
+            return error
+        }
+    }
+
+    private func domainConfigurationParsingError() -> NSError {
+        NSError(
+            domain: "FacebookLoginDomainConfiguration",
+            code: 0,
+            userInfo: [NSLocalizedDescriptionKey: "Unable to parse domain configuration response."]
+        )
+    }
+
+    private func isDomainConfigurationTimeout(error: NSError) -> Bool {
+        if error.domain == NSURLErrorDomain && error.code == NSURLErrorTimedOut && errorIsDomainConfiguration(error) {
+            return true
+        }
+
+        if let underlying = error.userInfo[NSUnderlyingErrorKey] as? NSError {
+            return isDomainConfigurationTimeout(error: underlying)
+        }
+
+        return false
+    }
+
+    private func errorIsDomainConfiguration(_ error: NSError) -> Bool {
+        guard let urlString = extractFailingURL(from: error) else {
+            return false
+        }
+
+        return urlString.contains("/server_domain_infos")
+    }
+
+    private func extractFailingURL(from error: NSError) -> String? {
+        if let url = error.userInfo[NSURLErrorFailingURLErrorKey] as? URL {
+            return url.absoluteString
+        }
+
+        if let urlString = error.userInfo[NSURLErrorFailingURLStringErrorKey] as? String {
+            return urlString
+        }
+
+        if let urlString = error.userInfo[NSErrorFailingURLStringKey] as? String {
+            return urlString
+        }
+
+        if let url = error.userInfo[NSErrorFailingURLKey] as? URL {
+            return url.absoluteString
+        }
+
+        return nil
+    }
+
     private func accessTokenToJson(_ accessToken: AccessToken) -> [String: Any?] {
         return [
             "applicationId": accessToken.appID,
@@ -225,8 +336,23 @@ public class FacebookLogin: CAPPlugin {
     }
 
     @objc func getDeferredDeepLink(_ call: CAPPluginCall) {
+        fetchDeferredDeepLink(call: call, attempt: 0)
+    }
+
+    private func fetchDeferredDeepLink(call: CAPPluginCall, attempt: Int) {
         AppLinkUtility.fetchDeferredAppLink { url, error in
-            if let error = error {
+            if let error = error as NSError? {
+                if attempt == 0 && self.isDomainConfigurationTimeout(error: error) {
+                    self.refreshDomainConfiguration { refreshError in
+                        if let refreshError = refreshError {
+                            call.reject("Error retrieving deferred deep link", nil, refreshError)
+                        } else {
+                            self.fetchDeferredDeepLink(call: call, attempt: attempt + 1)
+                        }
+                    }
+                    return
+                }
+
                 call.reject("Error retrieving deferred deep link", nil, error)
                 return
             }
