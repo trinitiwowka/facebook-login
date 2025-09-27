@@ -8,7 +8,7 @@ const FacebookLogin = core.registerPlugin('FacebookLogin', {
 
 class FacebookLoginWeb extends core.WebPlugin {
     async initialize(options) {
-        const defaultOptions = { version: 'v17.0' };
+        const defaultOptions = { version: 'v18.0' };
         await this.loadScript(options.locale);
         return FB.init(Object.assign(Object.assign({}, defaultOptions), options));
     }
