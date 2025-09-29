@@ -412,6 +412,10 @@ setAdvertiserIDCollectionEnabled(options: { enabled: boolean; }) => Promise<void
 getDeferredDeepLink() => Promise<{ uri: string | undefined; }>
 ```
 
+> **Note:** On iOS the promise is rejected if either `FacebookAppID` or `FacebookClientToken`
+> are missing from your app's `Info.plist`. Make sure to configure the Facebook SDK before
+> calling this method.
+
 **Returns:** <code>Promise&lt;{ uri: string; }&gt;</code>
 
 --------------------

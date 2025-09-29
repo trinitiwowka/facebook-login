@@ -225,6 +225,16 @@ public class FacebookLogin: CAPPlugin {
     }
 
     @objc func getDeferredDeepLink(_ call: CAPPluginCall) {
+        guard let appId = Bundle.main.object(forInfoDictionaryKey: "FacebookAppID") as? String, !appId.isEmpty else {
+            call.reject("Missing FacebookAppID in Info.plist. Configure Facebook SDK before calling getDeferredDeepLink().")
+            return
+        }
+
+        guard let clientToken = Bundle.main.object(forInfoDictionaryKey: "FacebookClientToken") as? String, !clientToken.isEmpty else {
+            call.reject("Missing FacebookClientToken in Info.plist. Configure Facebook SDK before calling getDeferredDeepLink().")
+            return
+        }
+
         AppLinkUtility.fetchDeferredAppLink { url, error in
             if let error = error {
                 call.reject("Error retrieving deferred deep link", nil, error)
