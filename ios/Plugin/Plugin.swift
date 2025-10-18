@@ -19,6 +19,12 @@ public class FacebookLogin: CAPPlugin {
             dateFormatter.formatOptions = [.withInternetDateTime]
         }
 
+        // Ensure Facebook SDK is initialized on iOS in case the host app
+        // did not wire ApplicationDelegate in AppDelegate properly.
+        // This is safe to call multiple times.
+        DispatchQueue.main.async {
+            ApplicationDelegate.shared.initializeSDK()
+        }
     }
 
     private func dateToJS(_ date: Date) -> String {
@@ -225,26 +231,31 @@ public class FacebookLogin: CAPPlugin {
     }
 
     @objc func getDeferredDeepLink(_ call: CAPPluginCall) {
+        // Validate required Facebook SDK configuration
         guard let appId = Bundle.main.object(forInfoDictionaryKey: "FacebookAppID") as? String, !appId.isEmpty else {
             call.reject("Missing FacebookAppID in Info.plist. Configure Facebook SDK before calling getDeferredDeepLink().")
             return
         }
-
         guard let clientToken = Bundle.main.object(forInfoDictionaryKey: "FacebookClientToken") as? String, !clientToken.isEmpty else {
             call.reject("Missing FacebookClientToken in Info.plist. Configure Facebook SDK before calling getDeferredDeepLink().")
             return
         }
 
-        AppLinkUtility.fetchDeferredAppLink { url, error in
-            if let error = error {
-                call.reject("Error retrieving deferred deep link", nil, error)
-                return
-            }
+        // Ensure call runs on main thread per Facebook SDK guidance
+        DispatchQueue.main.async {
+            AppLinkUtility.fetchDeferredAppLink { url, error in
+                if let error = error {
+                    NSLog("[FacebookLogin] Deferred deep link error: \(error.localizedDescription)")
+                    call.reject("Error retrieving deferred deep link", nil, error)
+                    return
+                }
 
-            if let url = url {
-                call.resolve(["uri": url.absoluteString])
-            } else {
-                call.reject("No deferred deep link found")
+                if let url = url {
+                    call.resolve(["uri": url.absoluteString])
+                } else {
+                    // Resolve with undefined when no DDL is available so apps can handle it gracefully
+                    call.resolve(["uri": nil])
+                }
             }
         }
     }

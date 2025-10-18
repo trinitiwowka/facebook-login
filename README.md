@@ -162,6 +162,14 @@ Add the following in the `ios/App/App/info.plist` file inside of the outermost `
 
 More information can be found here: https://developers.facebook.com/docs/facebook-login/ios
 
+#### Notes about Deferred Deep Links on iOS
+
+- Deferred deep links are returned only on the first launch after installing the app from a Facebook ad that has a deep link configured. They are one-time and not guaranteed for every user.
+- Starting with iOS 14+, ATT (App Tracking Transparency) impacts attribution. Make sure to prompt users for tracking permission and set `setAdvertiserTrackingEnabled({ enabled: true })` if the user grants permission.
+- Ensure you have both `FacebookAppID` and `FacebookClientToken` set in `Info.plist`.
+- The SDK must be initialized early (in `application(_:didFinishLaunchingWithOptions:)`). This plugin now also calls `ApplicationDelegate.shared.initializeSDK()` on load as a safety net.
+- As of this version, `getDeferredDeepLink()` resolves with `{ uri: string | undefined }`. It will resolve with `uri: undefined` when no deferred link is available, and it will reject only in case of configuration error or SDK error (e.g., missing Info.plist keys).
+
 ### Web configuration
 
 ```typescript
@@ -479,13 +487,17 @@ getDeferredDeepLink() => Promise<{ uri: string | undefined; }>
 
 Make all properties in T optional
 
-<code>{ [P in keyof T]?: T[P]; }</code>
+<code>{
+ [P in keyof T]?: T[P];
+ }</code>
 
 
 #### Record
 
 Construct a type with a set of properties K of type T
 
-<code>{ [P in K]: T; }</code>
+<code>{
+ [P in K]: T;
+ }</code>
 
 </docgen-api>
