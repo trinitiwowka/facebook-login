@@ -1,0 +1,404 @@
+{
+  "api": {
+    "name": "FacebookLoginPlugin",
+    "slug": "facebookloginplugin",
+    "docs": "",
+    "tags": [],
+    "methods": [
+      {
+        "name": "initialize",
+        "signature": "(options: Partial<FacebookConfiguration>) => Promise<void>",
+        "parameters": [
+          {
+            "name": "options",
+            "docs": "",
+            "type": "Partial<FacebookConfiguration>"
+          }
+        ],
+        "returns": "Promise<void>",
+        "tags": [],
+        "docs": "Initializes the Facebook JavaScript SDK on Web.\nThis is a no-op on Android and iOS, where the SDK is configured natively.",
+        "complexTypes": [
+          "Partial",
+          "FacebookConfiguration"
+        ],
+        "slug": "initialize"
+      },
+      {
+        "name": "login",
+        "signature": "(options: { permissions: string[]; tracking?: 'limited' | 'enabled'; nonce?: string; }) => Promise<FacebookLoginResponse>",
+        "parameters": [
+          {
+            "name": "options",
+            "docs": "",
+            "type": "{ permissions: string[]; tracking?: 'limited' | 'enabled' | undefined; nonce?: string | undefined; }"
+          }
+        ],
+        "returns": "Promise<FacebookLoginResponse>",
+        "tags": [],
+        "docs": "Starts the Facebook login flow with the requested permissions.\nA cancelled native login resolves without a token.",
+        "complexTypes": [
+          "FacebookLoginResponse"
+        ],
+        "slug": "login"
+      },
+      {
+        "name": "logout",
+        "signature": "() => Promise<void>",
+        "parameters": [],
+        "returns": "Promise<void>",
+        "tags": [],
+        "docs": "Logs out the current Facebook session.",
+        "complexTypes": [],
+        "slug": "logout"
+      },
+      {
+        "name": "reauthorize",
+        "signature": "() => Promise<FacebookLoginResponse>",
+        "parameters": [],
+        "returns": "Promise<FacebookLoginResponse>",
+        "tags": [],
+        "docs": "Requests renewed data access for the current Facebook session.",
+        "complexTypes": [
+          "FacebookLoginResponse"
+        ],
+        "slug": "reauthorize"
+      },
+      {
+        "name": "getCurrentAccessToken",
+        "signature": "() => Promise<FacebookCurrentAccessTokenResponse>",
+        "parameters": [],
+        "returns": "Promise<FacebookCurrentAccessTokenResponse>",
+        "tags": [],
+        "docs": "Returns the current token. iOS returns an OIDC authentication token for\nLimited Login. Native platforms resolve without a token when logged out;\nWeb rejects when there is no connected Facebook session.",
+        "complexTypes": [
+          "FacebookCurrentAccessTokenResponse"
+        ],
+        "slug": "getcurrentaccesstoken"
+      },
+      {
+        "name": "getProfile",
+        "signature": "<T extends Record<string, unknown>>(options: { fields: readonly string[]; }) => Promise<T>",
+        "parameters": [
+          {
+            "name": "options",
+            "docs": "",
+            "type": "{ fields: readonly string[]; }"
+          }
+        ],
+        "returns": "Promise<T>",
+        "tags": [],
+        "docs": "Requests the selected fields from the Facebook Graph API `/me` endpoint.",
+        "complexTypes": [
+          "T",
+          "Record"
+        ],
+        "slug": "getprofile"
+      },
+      {
+        "name": "logEvent",
+        "signature": "(options: { eventName: string; parameters?: Record<string, string | number>; }) => Promise<void>",
+        "parameters": [
+          {
+            "name": "options",
+            "docs": "",
+            "type": "{ eventName: string; parameters?: Record<string, string | number> | undefined; }"
+          }
+        ],
+        "returns": "Promise<void>",
+        "tags": [],
+        "docs": "Logs a Facebook App Event with optional string or number parameters.",
+        "complexTypes": [
+          "Record"
+        ],
+        "slug": "logevent"
+      },
+      {
+        "name": "setAutoLogAppEventsEnabled",
+        "signature": "(options: { enabled: boolean; }) => Promise<void>",
+        "parameters": [
+          {
+            "name": "options",
+            "docs": "",
+            "type": "{ enabled: boolean; }"
+          }
+        ],
+        "returns": "Promise<void>",
+        "tags": [],
+        "docs": "Enables or disables automatic App Event logging on native platforms.",
+        "complexTypes": [],
+        "slug": "setautologappeventsenabled"
+      },
+      {
+        "name": "setAdvertiserTrackingEnabled",
+        "signature": "(options: { enabled: boolean; }) => Promise<void>",
+        "parameters": [
+          {
+            "name": "options",
+            "docs": "",
+            "type": "{ enabled: boolean; }"
+          }
+        ],
+        "returns": "Promise<void>",
+        "tags": [],
+        "docs": "Enables or disables advertiser tracking on iOS.",
+        "complexTypes": [],
+        "slug": "setadvertisertrackingenabled"
+      },
+      {
+        "name": "setAdvertiserIDCollectionEnabled",
+        "signature": "(options: { enabled: boolean; }) => Promise<void>",
+        "parameters": [
+          {
+            "name": "options",
+            "docs": "",
+            "type": "{ enabled: boolean; }"
+          }
+        ],
+        "returns": "Promise<void>",
+        "tags": [],
+        "docs": "Enables or disables advertiser ID collection on native platforms.",
+        "complexTypes": [],
+        "slug": "setadvertiseridcollectionenabled"
+      },
+      {
+        "name": "getDeferredDeepLink",
+        "signature": "() => Promise<FacebookDeferredDeepLinkResponse>",
+        "parameters": [],
+        "returns": "Promise<FacebookDeferredDeepLinkResponse>",
+        "tags": [],
+        "docs": "Fetches the deferred App Link attributed to this app install.\nAndroid retries missing attribution data five times before rejecting. iOS\nand Web resolve without a URI when no link is available.",
+        "complexTypes": [
+          "FacebookDeferredDeepLinkResponse"
+        ],
+        "slug": "getdeferreddeeplink"
+      }
+    ],
+    "properties": []
+  },
+  "interfaces": [
+    {
+      "name": "FacebookConfiguration",
+      "slug": "facebookconfiguration",
+      "docs": "",
+      "tags": [],
+      "methods": [],
+      "properties": [
+        {
+          "name": "appId",
+          "tags": [],
+          "docs": "Meta application ID.",
+          "complexTypes": [],
+          "type": "string"
+        },
+        {
+          "name": "autoLogAppEvents",
+          "tags": [],
+          "docs": "Whether the Web SDK automatically logs App Events.",
+          "complexTypes": [],
+          "type": "boolean"
+        },
+        {
+          "name": "xfbml",
+          "tags": [],
+          "docs": "Whether the Web SDK parses XFBML social plugins.",
+          "complexTypes": [],
+          "type": "boolean"
+        },
+        {
+          "name": "version",
+          "tags": [],
+          "docs": "Facebook Graph API version used by the Web SDK. Defaults to `v26.0`.",
+          "complexTypes": [],
+          "type": "string"
+        },
+        {
+          "name": "locale",
+          "tags": [],
+          "docs": "Locale used to load the Web SDK. Defaults to `en_US`.",
+          "complexTypes": [],
+          "type": "string"
+        }
+      ]
+    },
+    {
+      "name": "FacebookLoginResponse",
+      "slug": "facebookloginresponse",
+      "docs": "",
+      "tags": [],
+      "methods": [],
+      "properties": [
+        {
+          "name": "accessToken",
+          "tags": [],
+          "docs": "Token response when one is returned by the platform.",
+          "complexTypes": [
+            "AccessToken"
+          ],
+          "type": "AccessToken | null"
+        },
+        {
+          "name": "recentlyGrantedPermissions",
+          "tags": [],
+          "docs": "Permissions granted during this login.",
+          "complexTypes": [],
+          "type": "string[] | undefined"
+        },
+        {
+          "name": "recentlyDeniedPermissions",
+          "tags": [],
+          "docs": "Permissions denied during this login.",
+          "complexTypes": [],
+          "type": "string[] | undefined"
+        }
+      ]
+    },
+    {
+      "name": "AccessToken",
+      "slug": "accesstoken",
+      "docs": "",
+      "tags": [],
+      "methods": [],
+      "properties": [
+        {
+          "name": "applicationId",
+          "tags": [],
+          "docs": "Meta application ID that issued the token.",
+          "complexTypes": [],
+          "type": "string | undefined"
+        },
+        {
+          "name": "declinedPermissions",
+          "tags": [],
+          "docs": "Permissions declined by the user.",
+          "complexTypes": [],
+          "type": "string[] | undefined"
+        },
+        {
+          "name": "expires",
+          "tags": [],
+          "docs": "ISO 8601 token expiration date.",
+          "complexTypes": [],
+          "type": "string | undefined"
+        },
+        {
+          "name": "isExpired",
+          "tags": [],
+          "docs": "Whether the token is expired.",
+          "complexTypes": [],
+          "type": "boolean | undefined"
+        },
+        {
+          "name": "lastRefresh",
+          "tags": [],
+          "docs": "ISO 8601 date when the token was last refreshed.",
+          "complexTypes": [],
+          "type": "string | undefined"
+        },
+        {
+          "name": "permissions",
+          "tags": [],
+          "docs": "Permissions granted to the token.",
+          "complexTypes": [],
+          "type": "string[] | undefined"
+        },
+        {
+          "name": "token",
+          "tags": [],
+          "docs": "Token string returned by the platform. With iOS Limited Login, this is an\nOIDC authentication token (JWT), not a Graph API access token.",
+          "complexTypes": [],
+          "type": "string"
+        },
+        {
+          "name": "userId",
+          "tags": [],
+          "docs": "Facebook user ID associated with the token.",
+          "complexTypes": [],
+          "type": "string | undefined"
+        }
+      ]
+    },
+    {
+      "name": "FacebookCurrentAccessTokenResponse",
+      "slug": "facebookcurrentaccesstokenresponse",
+      "docs": "",
+      "tags": [],
+      "methods": [],
+      "properties": [
+        {
+          "name": "accessToken",
+          "tags": [],
+          "docs": "Current token response when one is returned by the platform.",
+          "complexTypes": [
+            "AccessToken"
+          ],
+          "type": "AccessToken | null"
+        }
+      ]
+    },
+    {
+      "name": "FacebookDeferredDeepLinkResponse",
+      "slug": "facebookdeferreddeeplinkresponse",
+      "docs": "",
+      "tags": [],
+      "methods": [],
+      "properties": [
+        {
+          "name": "uri",
+          "tags": [],
+          "docs": "Deferred App Link URI. Omitted when Meta has no link for this install.",
+          "complexTypes": [],
+          "type": "string | undefined"
+        },
+        {
+          "name": "promotionCode",
+          "tags": [],
+          "docs": "Promotion code returned by the Android SDK, when present.",
+          "complexTypes": [],
+          "type": "string | undefined"
+        },
+        {
+          "name": "arguments",
+          "tags": [],
+          "docs": "Deferred App Link argument bundle returned by the Android SDK.",
+          "complexTypes": [
+            "Record"
+          ],
+          "type": "Record<string, unknown>"
+        }
+      ]
+    }
+  ],
+  "enums": [],
+  "typeAliases": [
+    {
+      "name": "Partial",
+      "slug": "partial",
+      "docs": "Make all properties in T optional",
+      "types": [
+        {
+          "text": "{\r\n    [P in keyof T]?: T[P];\r\n}",
+          "complexTypes": [
+            "T",
+            "P"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Record",
+      "slug": "record",
+      "docs": "Construct a type with a set of properties K of type T",
+      "types": [
+        {
+          "text": "{\r\n    [P in K]: T;\r\n}",
+          "complexTypes": [
+            "K",
+            "T"
+          ]
+        }
+      ]
+    }
+  ],
+  "pluginConfigs": []
+}
