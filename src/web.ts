@@ -4,6 +4,7 @@ import type {
   FacebookLoginPlugin,
   FacebookLoginResponse,
   FacebookCurrentAccessTokenResponse,
+  FacebookDeferredDeepLinkResponse,
   FacebookGetLoginStatusResponse,
   FacebookGetProfileResponse,
   FacebookConfiguration,
@@ -170,5 +171,9 @@ export class FacebookLoginWeb extends WebPlugin implements FacebookLoginPlugin {
 
   async setAdvertiserIDCollectionEnabled(): Promise<void> {
     return Promise.resolve();
+  }
+
+  async getDeferredDeepLink(): Promise<FacebookDeferredDeepLinkResponse> {
+    return {};
   }
 }

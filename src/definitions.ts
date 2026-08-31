@@ -19,6 +19,18 @@ export interface FacebookCurrentAccessTokenResponse {
   accessToken: AccessToken | null;
 }
 
+/**
+ * Deferred deep-link data supplied by a native platform.
+ *
+ * All fields are optional because a platform can return partial attribution data,
+ * or no deferred link at all.
+ */
+export interface FacebookDeferredDeepLinkResponse {
+  uri?: string;
+  promotionCode?: string;
+  arguments?: Record<string, unknown>;
+}
+
 export interface FacebookLoginPlugin {
   initialize(options: Partial<FacebookConfiguration>): Promise<void>;
   login(options: {
@@ -42,6 +54,15 @@ export interface FacebookLoginPlugin {
   setAutoLogAppEventsEnabled(options: { enabled: boolean }): Promise<void>;
   setAdvertiserTrackingEnabled(options: { enabled: boolean }): Promise<void>;
   setAdvertiserIDCollectionEnabled(options: { enabled: boolean }): Promise<void>;
+  /**
+   * Retrieves deferred deep-link data, when the native platform provides it.
+   *
+   * Android makes one immediate request and then up to five retries, spaced two
+   * seconds apart; it rejects when no data is available after those attempts.
+   * iOS and web resolve an empty object when no URI is available. iOS rejects
+   * configuration and SDK errors.
+   */
+  getDeferredDeepLink(): Promise<FacebookDeferredDeepLinkResponse>;
 }
 
 export interface FacebookGetLoginStatusResponse {
