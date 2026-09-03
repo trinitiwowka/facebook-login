@@ -14,6 +14,26 @@
   <a href="https://www.npmjs.com/package/@capacitor-community/facebook-login"><img src="https://img.shields.io/npm/v/@capacitor-community/facebook-login?style=flat-square" /></a>
 </p>
 
+## Fork maintenance status
+
+This fork preserves its historical branches so existing Git-based installations
+continue to resolve. The default `master` branch remains on the legacy Capacitor 6
+line for that compatibility reason; new integrations should select an immutable
+release matching their Capacitor major version.
+
+| Capacitor | Recommended release | Review |
+| --------- | ------------------- | ------ |
+| 7 | [`deferred-deep-link-v7.0.1-1`](https://github.com/trinitiwowka/facebook-login/releases/tag/deferred-deep-link-v7.0.1-1) | [#12](https://github.com/trinitiwowka/facebook-login/pull/12) |
+| 8 | [`deferred-deep-link-v8.1.0-1`](https://github.com/trinitiwowka/facebook-login/releases/tag/deferred-deep-link-v8.1.0-1) | [#13](https://github.com/trinitiwowka/facebook-login/pull/13) and [upstream #211](https://github.com/capacitor-community/facebook-login/pull/211) |
+
+The historical `getting-deffered-deep-link` and
+`getting-deffered-deep-link-v7` refs have not been deleted. Their exact heads are
+also available as the
+[`legacy-deferred-deep-link-v6.1.2`](https://github.com/trinitiwowka/facebook-login/releases/tag/legacy-deferred-deep-link-v6.1.2)
+and
+[`legacy-deferred-deep-link-v7.0.0`](https://github.com/trinitiwowka/facebook-login/releases/tag/legacy-deferred-deep-link-v7.0.0)
+archives. Prefer the maintained releases above for current Facebook SDK support.
+
 ## Maintainers
 
 | Maintainer          | GitHub                                  | Social                                    | Sponsoring Company                             |
