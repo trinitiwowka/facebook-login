@@ -162,6 +162,30 @@ Add the following in the `ios/App/App/info.plist` file inside of the outermost `
 
 More information can be found here: https://developers.facebook.com/docs/facebook-login/ios
 
+### Deferred deep links
+
+`getDeferredDeepLink()` returns attribution data supplied by the platform. Its
+`uri`, `promotionCode`, and `arguments` fields are optional, so callers should
+handle an empty response as a valid no-link result where applicable.
+
+```ts
+const deferredLink = await FacebookLogin.getDeferredDeepLink();
+
+if (deferredLink.uri === 'https://example.com/welcome') {
+  console.log(deferredLink.promotionCode, deferredLink.arguments);
+}
+```
+
+- Android makes one immediate request and then up to five retries, with a
+  2-second delay between attempts. It rejects if no data is available after all
+  attempts. Consumer R8 rules preserve the Google Play Services attribution
+  APIs that the Meta SDK accesses through reflection in minified builds.
+- iOS resolves with an empty object when no URI is available. It rejects SDK
+  errors and configuration errors; `FacebookAppID` and `FacebookClientToken`
+  must both be present in `Info.plist`.
+- Web resolves with an empty object because the web SDK does not provide this
+  retrieval flow.
+
 ### Web configuration
 
 ```typescript
@@ -255,6 +279,7 @@ console.log(`Facebook user's email is ${result.email}`);
 * [`setAutoLogAppEventsEnabled(...)`](#setautologappeventsenabled)
 * [`setAdvertiserTrackingEnabled(...)`](#setadvertisertrackingenabled)
 * [`setAdvertiserIDCollectionEnabled(...)`](#setadvertiseridcollectionenabled)
+* [`getDeferredDeepLink()`](#getdeferreddeeplink)
 * [Interfaces](#interfaces)
 * [Type Aliases](#type-aliases)
 
@@ -389,6 +414,24 @@ setAdvertiserIDCollectionEnabled(options: { enabled: boolean; }) => Promise<void
 --------------------
 
 
+### getDeferredDeepLink()
+
+```typescript
+getDeferredDeepLink() => Promise<FacebookDeferredDeepLinkResponse>
+```
+
+Retrieves deferred deep-link data, when the native platform provides it.
+
+Android makes one immediate request and then up to five retries, spaced two
+seconds apart; it rejects when no data is available after those attempts.
+iOS and web resolve an empty object when no URI is available. iOS rejects
+configuration and SDK errors.
+
+**Returns:** <code>Promise&lt;<a href="#facebookdeferreddeeplinkresponse">FacebookDeferredDeepLinkResponse</a>&gt;</code>
+
+--------------------
+
+
 ### Interfaces
 
 
@@ -431,6 +474,20 @@ setAdvertiserIDCollectionEnabled(options: { enabled: boolean; }) => Promise<void
 | Prop              | Type                                                        |
 | ----------------- | ----------------------------------------------------------- |
 | **`accessToken`** | <code><a href="#accesstoken">AccessToken</a> \| null</code> |
+
+
+#### FacebookDeferredDeepLinkResponse
+
+Deferred deep-link data supplied by a native platform.
+
+All fields are optional because a platform can return partial attribution data,
+or no deferred link at all.
+
+| Prop                | Type                                                             |
+| ------------------- | ---------------------------------------------------------------- |
+| **`uri`**           | <code>string</code>                                              |
+| **`promotionCode`** | <code>string</code>                                              |
+| **`arguments`**     | <code><a href="#record">Record</a>&lt;string, unknown&gt;</code> |
 
 
 ### Type Aliases
